@@ -1,5 +1,10 @@
-import "dotenv/config";
+import path from "node:path";
+import dotenv from "dotenv";
 import { z } from "zod";
+
+dotenv.config();
+dotenv.config({ path: path.resolve(process.cwd(), "apps/api/.env") });
+dotenv.config({ path: path.resolve(process.cwd(), ".env") });
 
 const bool = (def: boolean) =>
   z

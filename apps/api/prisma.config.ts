@@ -1,6 +1,11 @@
-import "dotenv/config";
 import path from "node:path";
-import { defineConfig, env } from "prisma/config";
+import dotenv from "dotenv";
+import { defineConfig } from "prisma/config";
+
+// Load environment variables from cwd, apps/api/.env, or root .env
+dotenv.config();
+dotenv.config({ path: path.resolve(process.cwd(), "apps/api/.env") });
+dotenv.config({ path: path.resolve(process.cwd(), ".env") });
 
 export default defineConfig({
   schema: path.join("prisma", "schema.prisma"),
@@ -9,6 +14,7 @@ export default defineConfig({
     seed: "tsx prisma/seed.ts",
   },
   datasource: {
-    url: env("DATABASE_URL"),
+    url: process.env.DATABASE_URL || "postgresql://postgres:postgres@localhost:5432/amanah",
   },
 });
+

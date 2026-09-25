@@ -81,9 +81,16 @@ export function createApp() {
   api.use(notFoundHandler);
   app.use("/api", api);
 
-  // Optional: serve the built frontend from the API (single-service deployment).
-  const webDist = process.env.WEB_DIST_DIR ? path.resolve(process.env.WEB_DIST_DIR) : null;
-  if (webDist && fs.existsSync(path.join(webDist, "index.html"))) {
+  // Serve the built frontend from the API if present (single-service deployment on Hostinger/VPS)
+  const candidateDirs = [
+    process.env.WEB_DIST_DIR ? path.resolve(process.env.WEB_DIST_DIR) : null,
+    path.resolve(process.cwd(), "apps/web/dist"),
+    path.resolve(process.cwd(), "../web/dist"),
+    path.resolve(process.cwd(), "web/dist"),
+  ].filter(Boolean) as string[];
+
+  const webDist = candidateDirs.find((d) => fs.existsSync(path.join(d, "index.html")));
+  if (webDist) {
     app.use(express.static(webDist, { index: false, maxAge: "1h", setHeaders: (res, p) => /\/assets\//.test(p) && res.setHeader("Cache-Control", "public, max-age=31536000, immutable") }));
     app.get(/^(?!\/api\/).*/, (_req, res) => res.sendFile(path.join(webDist, "index.html")));
   }
