@@ -6,11 +6,15 @@ import { emailStatus } from "./email/service.js";
 
 const app = createApp();
 
-const server = app.listen(env.PORT, () => {
+const PORT = Number(process.env.PORT) || env.PORT || 4000;
+const HOST = process.env.HOST || "0.0.0.0";
+
+const server = app.listen(PORT, HOST, () => {
   const email = emailStatus();
-  logger.info(`Cyber Nexa API listening on ${env.BACKEND_URL} (port ${env.PORT}, ${env.NODE_ENV})`);
+  logger.info(`Cyber Nexa API listening on http://${HOST}:${PORT} (${env.NODE_ENV})`);
   logger.info(`Email provider: ${email.provider}${email.configured ? "" : " (NOT CONFIGURED — emails will be skipped)"}; storage: ${env.STORAGE_PROVIDER}`);
 });
+
 
 /** Housekeeping: expired sessions/tokens and analytics older than 13 months. */
 async function cleanup() {

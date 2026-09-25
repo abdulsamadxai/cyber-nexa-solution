@@ -91,8 +91,11 @@ export function createApp() {
 
   const webDist = candidateDirs.find((d) => fs.existsSync(path.join(d, "index.html")));
   if (webDist) {
-    app.use(express.static(webDist, { index: false, maxAge: "1h", setHeaders: (res, p) => /\/assets\//.test(p) && res.setHeader("Cache-Control", "public, max-age=31536000, immutable") }));
+    console.log(`[info] Serving frontend static assets from: ${webDist}`);
+    app.use(express.static(webDist, { index: "index.html", maxAge: "1h", setHeaders: (res, p) => /\/assets\//.test(p) && res.setHeader("Cache-Control", "public, max-age=31536000, immutable") }));
     app.get(/^(?!\/api\/).*/, (_req, res) => res.sendFile(path.join(webDist, "index.html")));
+  } else {
+    console.warn(`[warn] No frontend build found in candidate directories: ${candidateDirs.join(", ")}`);
   }
 
   app.use(notFoundHandler);
