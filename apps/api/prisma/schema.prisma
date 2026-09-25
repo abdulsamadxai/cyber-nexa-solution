@@ -1,0 +1,492 @@
+// Cyber Nexa Solution — database schema
+// Run `npm run db:migrate` after editing this file.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ───────────────────────────── Auth & users ─────────────────────────────
+
+enum Role {
+  SUPER_ADMIN
+  ADMIN
+  EDITOR
+  SALES
+}
+
+enum TokenType {
+  PASSWORD_RESET
+  EMAIL_VERIFICATION
+  INVITE
+}
+
+model User {
+  id               String    @id @default(cuid())
+  email            String    @unique
+  name             String
+  passwordHash     String?
+  role             Role      @default(EDITOR)
+  isActive         Boolean   @default(true)
+  emailVerifiedAt  DateTime?
+  failedLoginCount Int       @default(0)
+  lockedUntil      DateTime?
+  lastLoginAt      DateTime?
+  avatarUrl        String?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  deletedAt        DateTime?
+
+  sessions          Session[]
+  tokens            AuthToken[]
+  assignedInquiries Inquiry[]      @relation("InquiryAssignee")
+  inquiryNotes      InquiryNote[]
+  activities        Activity[]
+  auditLogs         AuditLog[]
+  blogPosts         BlogPost[]
+  media             Media[]
+}
+
+model Session {
+  id         String   @id @default(cuid())
+  tokenHash  String   @unique
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  ip         String?
+  userAgent  String?
+  expiresAt  DateTime
+  lastSeenAt DateTime @default(now())
+  createdAt  DateTime @default(now())
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model AuthToken {
+  id        String    @id @default(cuid())
+  type      TokenType
+  tokenHash String    @unique
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId, type])
+}
+
+// ───────────────────────────── Content ─────────────────────────────
+
+model Service {
+  id               String    @id @default(cuid())
+  title            String
+  slug             String    @unique
+  icon             String    @default("Code2")
+  shortDescription String
+  description      String
+  features         String[]
+  technologies     String[]
+  ctaLabel         String?
+  ctaUrl           String?
+  seoTitle         String?
+  seoDescription   String?
+  order            Int       @default(0)
+  published        Boolean   @default(true)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  deletedAt        DateTime?
+
+  @@index([published, order])
+}
+
+model Solution {
+  id             String    @id @default(cuid())
+  title          String
+  slug           String    @unique
+  icon           String    @default("Boxes")
+  industry       String
+  summary        String
+  description    String
+  challenges     String[]
+  features       String[]
+  technologies   String[]
+  seoTitle       String?
+  seoDescription String?
+  order          Int       @default(0)
+  published      Boolean   @default(true)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  deletedAt      DateTime?
+
+  @@index([published, order])
+  @@index([industry])
+}
+
+model Project {
+  id             String         @id @default(cuid())
+  title          String
+  slug           String         @unique
+  category       String
+  clientName     String?
+  isSample       Boolean        @default(false)
+  summary        String
+  description    String
+  problem        String
+  solution       String
+  technologies   String[]
+  features       String[]
+  coverImage     String?
+  projectUrl     String?
+  githubUrl      String?
+  date           DateTime?
+  featured       Boolean        @default(false)
+  published      Boolean        @default(false)
+  seoTitle       String?
+  seoDescription String?
+  order          Int            @default(0)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  deletedAt      DateTime?
+  images         ProjectImage[]
+
+  @@index([published, order])
+  @@index([category])
+}
+
+model ProjectImage {
+  id        String  @id @default(cuid())
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  url       String
+  alt       String?
+  order     Int     @default(0)
+
+  @@index([projectId])
+}
+
+enum PostStatus {
+  DRAFT
+  PUBLISHED
+  SCHEDULED
+}
+
+model BlogCategory {
+  id          String     @id @default(cuid())
+  name        String
+  slug        String     @unique
+  description String?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  posts       BlogPost[]
+}
+
+model BlogTag {
+  id        String     @id @default(cuid())
+  name      String
+  slug      String     @unique
+  createdAt DateTime   @default(now())
+  posts     BlogPost[]
+}
+
+model BlogPost {
+  id             String        @id @default(cuid())
+  title          String
+  slug           String        @unique
+  excerpt        String
+  content        String
+  featuredImage  String?
+  status         PostStatus    @default(DRAFT)
+  publishedAt    DateTime?
+  authorName     String?
+  authorId       String?
+  author         User?         @relation(fields: [authorId], references: [id], onDelete: SetNull)
+  categoryId     String?
+  category       BlogCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  tags           BlogTag[]
+  seoTitle       String?
+  seoDescription String?
+  readingMinutes Int           @default(1)
+  views          Int           @default(0)
+  isSample       Boolean       @default(false)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  deletedAt      DateTime?
+
+  @@index([status, publishedAt])
+  @@index([categoryId])
+}
+
+model TeamMember {
+  id        String    @id @default(cuid())
+  name      String
+  role      String
+  bio       String?
+  photo     String?
+  linkedin  String?
+  github    String?
+  email     String?
+  order     Int       @default(0)
+  published Boolean   @default(false)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+}
+
+model Testimonial {
+  id        String    @id @default(cuid())
+  name      String
+  company   String?
+  role      String?
+  photo     String?
+  content   String
+  rating    Int?
+  isSample  Boolean   @default(false)
+  published Boolean   @default(false)
+  order     Int       @default(0)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+}
+
+model Faq {
+  id        String    @id @default(cuid())
+  question  String
+  answer    String
+  category  String    @default("General")
+  order     Int       @default(0)
+  published Boolean   @default(true)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+}
+
+// ───────────────────────────── CRM ─────────────────────────────
+
+enum InquiryType {
+  CONTACT
+  PROJECT
+}
+
+enum InquiryStatus {
+  NEW
+  CONTACTED
+  IN_DISCUSSION
+  PROPOSAL
+  WON
+  LOST
+  ARCHIVED
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+model Contact {
+  id         String     @id @default(cuid())
+  name       String
+  email      String     @unique
+  phone      String?
+  company    String?
+  country    String?
+  source     String?
+  notes      String?
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  deletedAt  DateTime?
+  inquiries  Inquiry[]
+  activities Activity[]
+
+  @@index([createdAt])
+}
+
+model Inquiry {
+  id               String         @id @default(cuid())
+  number           Int            @unique @default(autoincrement())
+  type             InquiryType
+  status           InquiryStatus  @default(NEW)
+  priority         Priority       @default(MEDIUM)
+  name             String
+  email            String
+  phone            String?
+  company          String?
+  country          String?
+  subject          String?
+  message          String
+  projectType      String?
+  budget           String?
+  timeline         String?
+  requiredFeatures String?
+  referenceUrl     String?
+  heardFrom        String?
+  contactId        String?
+  contact          Contact?       @relation(fields: [contactId], references: [id], onDelete: SetNull)
+  assignedToId     String?
+  assignedTo       User?          @relation("InquiryAssignee", fields: [assignedToId], references: [id], onDelete: SetNull)
+  followUpAt       DateTime?
+  ipHash           String?
+  userAgent        String?
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  deletedAt        DateTime?
+  notes            InquiryNote[]
+  activities       Activity[]
+
+  @@index([status, createdAt])
+  @@index([type, createdAt])
+  @@index([contactId])
+  @@index([assignedToId])
+}
+
+model InquiryNote {
+  id        String   @id @default(cuid())
+  inquiryId String
+  inquiry   Inquiry  @relation(fields: [inquiryId], references: [id], onDelete: Cascade)
+  authorId  String?
+  author    User?    @relation(fields: [authorId], references: [id], onDelete: SetNull)
+  content   String
+  createdAt DateTime @default(now())
+
+  @@index([inquiryId])
+}
+
+/// Timeline entries for inquiries and contacts (status changes, emails, notes…)
+model Activity {
+  id        String   @id @default(cuid())
+  type      String
+  message   String
+  meta      Json?
+  inquiryId String?
+  inquiry   Inquiry? @relation(fields: [inquiryId], references: [id], onDelete: Cascade)
+  contactId String?
+  contact   Contact? @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  createdAt DateTime @default(now())
+
+  @@index([inquiryId, createdAt])
+  @@index([contactId, createdAt])
+}
+
+// ───────────────────────────── System ─────────────────────────────
+
+enum NotificationType {
+  CONTACT_INQUIRY
+  PROJECT_INQUIRY
+  NEWSLETTER_SUBSCRIBER
+  SECURITY
+  SYSTEM
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  type      NotificationType
+  title     String
+  message   String
+  link      String?
+  readAt    DateTime?
+  createdAt DateTime         @default(now())
+
+  @@index([readAt, createdAt])
+}
+
+model Media {
+  id           String    @id @default(cuid())
+  filename     String
+  originalName String
+  mimeType     String
+  size         Int
+  width        Int?
+  height       Int?
+  url          String
+  storageKey   String
+  provider     String
+  alt          String?
+  folder       String    @default("general")
+  uploadedById String?
+  uploadedBy   User?     @relation(fields: [uploadedById], references: [id], onDelete: SetNull)
+  createdAt    DateTime  @default(now())
+  deletedAt    DateTime?
+
+  @@index([folder, createdAt])
+}
+
+enum SubscriberStatus {
+  PENDING
+  CONFIRMED
+  UNSUBSCRIBED
+}
+
+model NewsletterSubscriber {
+  id             String           @id @default(cuid())
+  email          String           @unique
+  status         SubscriberStatus @default(PENDING)
+  token          String           @unique
+  source         String?
+  confirmedAt    DateTime?
+  unsubscribedAt DateTime?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+}
+
+model SiteSetting {
+  key       String   @id
+  value     Json
+  updatedAt DateTime @updatedAt
+}
+
+/// Privacy-friendly analytics: no IP addresses or cookies are stored.
+/// `visitorHash` is a daily-rotating salted hash used only to count unique visitors.
+model PageView {
+  id          String   @id @default(cuid())
+  path        String
+  referrer    String?
+  source      String?
+  device      String?
+  visitorHash String?
+  createdAt   DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([path, createdAt])
+}
+
+enum EmailStatus {
+  SENT
+  FAILED
+  SKIPPED
+}
+
+model EmailLog {
+  id         String      @id @default(cuid())
+  to         String
+  subject    String
+  template   String
+  status     EmailStatus
+  provider   String
+  providerId String?
+  error      String?
+  createdAt  DateTime    @default(now())
+
+  @@index([createdAt])
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  userId     String?
+  user       User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  action     String
+  resource   String
+  resourceId String?
+  meta       Json?
+  ip         String?
+  createdAt  DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([resource, resourceId])
+}

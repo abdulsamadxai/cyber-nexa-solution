@@ -1,0 +1,65 @@
+# Render.com blueprint for Cyber Nexa Solution.
+# Deploy: push to GitHub, then "New +" → "Blueprint" and point at this repo.
+# Fill in the values marked <…> in the Render dashboard after the first deploy.
+databases:
+  - name: cyber-nexa-db
+    databaseName: cybernexa
+    plan: free
+
+services:
+  # ---- API (Node web service) ----
+  - type: web
+    name: cyber-nexa-api
+    runtime: node
+    plan: free
+    rootDir: .
+    buildCommand: npm ci && npm --workspace apps/api run build && npm --workspace apps/api run db:deploy
+    startCommand: npm --workspace apps/api run start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 4000
+      - key: TRUST_PROXY
+        value: 1
+      - key: DATABASE_URL
+        fromDatabase:
+          name: cyber-nexa-db
+          property: connectionString
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: FRONTEND_URL
+        sync: false      # set to your static-site URL, e.g. https://cyber-nexa-web.onrender.com
+      - key: BACKEND_URL
+        sync: false      # set to this service's URL, e.g. https://cyber-nexa-api.onrender.com
+      - key: COOKIE_SECURE
+        value: true
+      - key: COOKIE_SAMESITE
+        value: none      # site and API are on different hosts
+      - key: EMAIL_PROVIDER
+        value: console   # switch to resend/sendgrid/smtp and add keys when ready
+      - key: STORAGE_PROVIDER
+        value: local     # switch to s3/cloudinary for persistent uploads
+
+  # ---- Web (static site) ----
+  - type: web
+    name: cyber-nexa-web
+    runtime: static
+    rootDir: .
+    buildCommand: npm ci && npm --workspace apps/web run build
+    staticPublishPath: apps/web/dist
+    routes:
+      # Proxy API + uploads to the API service, and serve the SPA for everything else.
+      - type: rewrite
+        source: /api/*
+        destination: https://cyber-nexa-api.onrender.com/api/*
+      - type: rewrite
+        source: /uploads/*
+        destination: https://cyber-nexa-api.onrender.com/uploads/*
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_API_URL
+        value: ""        # empty → same-origin; the rewrites above forward /api to the API
