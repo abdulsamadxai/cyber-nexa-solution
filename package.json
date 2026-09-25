@@ -8,9 +8,9 @@
   "scripts": {
     "dev": "concurrently -n api,web -c cyan,magenta \"npm run dev -w apps/api\" \"npm run dev -w apps/web\"",
     "build": "npm run build -w apps/api && npm run build -w apps/web",
-    "vercel-build": "npm run build -w apps/web",
-    "build:web": "npm run build -w apps/web",
-    "build:api": "npm run build -w apps/api",
+    "vercel-build": "npm --prefix apps/web run build",
+    "build:web": "npm --prefix apps/web run build",
+    "build:api": "npm --prefix apps/api run build",
     "typecheck": "npm run typecheck -w apps/api && npm run typecheck -w apps/web",
     "start": "npm run start -w apps/api",
     "db:generate": "npm run db:generate -w apps/api",
