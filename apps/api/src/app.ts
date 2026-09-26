@@ -9,7 +9,7 @@ import { env, isProd } from "./config/env.js";
 import { prisma } from "./lib/prisma.js";
 import { requestId, errorHandler, notFoundHandler } from "./middleware/error.js";
 import { loadUser } from "./middleware/auth.js";
-import { csrfProtection, allowedOrigins } from "./middleware/csrf.js";
+import { csrfProtection, isOriginAllowed } from "./middleware/csrf.js";
 import { apiLimiter } from "./middleware/rateLimit.js";
 import { authRouter } from "./routes/auth.js";
 import { publicRouter } from "./routes/public.js";
@@ -34,7 +34,7 @@ export function createApp() {
   );
   app.use(
     cors({
-      origin: (origin, cb) => cb(null, !origin || allowedOrigins().includes(origin.replace(/\/$/, ""))),
+      origin: (origin, cb) => cb(null, !origin || isOriginAllowed(origin)),
       credentials: true,
       methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
       allowedHeaders: ["Content-Type", "X-CSRF-Token"],

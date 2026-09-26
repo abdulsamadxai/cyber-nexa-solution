@@ -31,10 +31,23 @@ async function ensureCsrf(): Promise<string> {
   const existing = readCookie("as_csrf");
   if (existing) return decodeURIComponent(existing);
   if (csrfToken) return csrfToken;
-  const res = await fetch(`${BASE}/api/auth/csrf`, { credentials: "include" });
-  const json = await res.json();
-  csrfToken = json.data.csrfToken;
-  return csrfToken!;
+  try {
+    const res = await fetch(`${BASE}/api/auth/csrf`, { credentials: "include" });
+    const contentType = res.headers.get("content-type") ?? "";
+    if (!contentType.includes("application/json")) {
+      throw new ApiError(
+        res.status || 500,
+        "BACKEND_UNAVAILABLE",
+        "Backend API is unreachable or returned non-JSON. Please ensure the backend is running."
+      );
+    }
+    const json = await res.json();
+    csrfToken = json.data?.csrfToken;
+    return csrfToken!;
+  } catch (e) {
+    if (e instanceof ApiError) throw e;
+    throw new ApiError(500, "CSRF_ERROR", e instanceof Error ? e.message : "Failed to obtain security token.");
+  }
 }
 
 type Options = Omit<RequestInit, "body"> & { body?: unknown; params?: Record<string, string | number | boolean | undefined | null> };

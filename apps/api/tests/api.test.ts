@@ -44,8 +44,8 @@ before(async () => {
     update: { passwordHash: await hashPassword("QaAdmin123!"), role: "SUPER_ADMIN", isActive: true, deletedAt: null, lockedUntil: null, failedLoginCount: 0 },
   });
   await prisma.user.upsert({
-    where: { email: "cybernexasolution@gmail.com" },
-    create: { email: "cybernexasolution@gmail.com", name: "QA Sales", role: "SALES", passwordHash: await hashPassword("QaSales123!"), emailVerifiedAt: new Date(), isActive: true },
+    where: { email: "sales@cybernexa.com" },
+    create: { email: "sales@cybernexa.com", name: "QA Sales", role: "SALES", passwordHash: await hashPassword("QaSales123!"), emailVerifiedAt: new Date(), isActive: true },
     update: { passwordHash: await hashPassword("QaSales123!"), role: "SALES", isActive: true, deletedAt: null },
   });
   await new Promise<void>((resolve) => {
@@ -146,7 +146,7 @@ describe("admin RBAC", () => {
     assert.equal((await api(`/api/admin/content/services/${id}`, { method: "DELETE", csrf })).status, 204);
   });
   it("SALES is denied content, users and settings", async () => {
-    const { csrf } = await login("cybernexasolution@gmail.com", "QaSales123!");
+    const { csrf } = await login("sales@cybernexa.com", "QaSales123!");
     assert.equal((await api("/api/admin/inquiries")).status, 200);
     assert.equal((await api("/api/admin/content/services", { method: "POST", csrf, body: JSON.stringify({ title: "no", shortDescription: "xxxxxxxxxx", description: "xxxxxxxxxx" }) })).status, 403);
     assert.equal((await api("/api/admin/users")).status, 403);

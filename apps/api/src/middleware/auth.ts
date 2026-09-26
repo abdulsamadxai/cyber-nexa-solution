@@ -5,7 +5,8 @@ import { forbidden, unauthorized } from "../lib/errors.js";
 
 /** Loads the signed-in user (if any) from the session cookie. */
 export async function loadUser(req: Request, _res: Response, next: NextFunction) {
-  const session = await getSessionUser(req.cookies?.[SESSION_COOKIE]);
+  const token = req.cookies?.["__Host-as_session"] || req.cookies?.["as_session"] || req.cookies?.[SESSION_COOKIE];
+  const session = await getSessionUser(token);
   if (session) {
     const u = session.user;
     req.user = { id: u.id, email: u.email, name: u.name, role: u.role, permissions: ROLE_PERMISSIONS[u.role] };

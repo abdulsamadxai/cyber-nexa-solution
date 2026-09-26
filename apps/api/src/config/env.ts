@@ -20,8 +20,8 @@ const optional = z
 const schema = z.object({
   NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
   PORT: z.coerce.number().default(4000),
-  DATABASE_URL: z.string().min(1, "DATABASE_URL is required"),
-  SESSION_SECRET: z.string().min(32, "SESSION_SECRET must be at least 32 characters"),
+  DATABASE_URL: z.string().min(1, "DATABASE_URL is required").default("postgresql://neondb_owner:npg_fnldmCFw0tp7@ep-broad-wildflower-b5kagywt-pooler.c-7.us-east-2.aws.neon.tech/neondb?sslmode=require"),
+  SESSION_SECRET: z.string().min(32, "SESSION_SECRET must be at least 32 characters").default("e9b2c8a7f1d4365890abcedf1234567890abcdef1234567890abcdef12345678"),
   FRONTEND_URL: z.string().url().default("http://localhost:5173"),
   BACKEND_URL: z.string().url().default("http://localhost:4000"),
   CORS_ORIGINS: optional,

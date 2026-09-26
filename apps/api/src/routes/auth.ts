@@ -37,7 +37,7 @@ function publicUser(u: { id: string; email: string; name: string; role: keyof ty
 /** Issues (or re-issues) the CSRF token. The SPA calls this once on load. */
 authRouter.get("/csrf", (req, res) => {
   const token = req.cookies?.[CSRF_COOKIE] || randomToken(24);
-  setCsrfCookie(res, token);
+  setCsrfCookie(res, token, req);
   res.json({ data: { csrfToken: token } });
 });
 

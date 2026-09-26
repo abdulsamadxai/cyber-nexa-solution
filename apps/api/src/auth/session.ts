@@ -7,11 +7,21 @@ import { clientIp } from "../lib/http.js";
 export const SESSION_COOKIE = isProd ? "__Host-as_session" : "as_session";
 export const CSRF_COOKIE = "as_csrf";
 
-function cookieBase(): CookieOptions {
-  const secure = isProd || env.COOKIE_SECURE || env.COOKIE_SAMESITE === "none";
+export function isRequestSecure(req?: Request): boolean {
+  if (!req) return isProd || env.COOKIE_SECURE;
+  const proto = req.get("x-forwarded-proto");
+  if (proto) return proto === "https";
+  if (req.secure) return true;
+  const host = req.get("host") || "";
+  if (host.startsWith("localhost") || host.startsWith("127.0.0.1")) return false;
+  return isProd || env.COOKIE_SECURE;
+}
+
+function cookieBase(req?: Request): CookieOptions {
+  const secure = isRequestSecure(req);
   return {
     secure,
-    sameSite: env.COOKIE_SAMESITE,
+    sameSite: secure ? env.COOKIE_SAMESITE : "lax",
     path: "/",
     // __Host- cookies must not set a Domain; only use COOKIE_DOMAIN outside that prefix.
     ...(env.COOKIE_DOMAIN && !SESSION_COOKIE.startsWith("__Host-") ? { domain: env.COOKIE_DOMAIN } : {}),
@@ -30,13 +40,16 @@ export async function createSession(req: Request, res: Response, userId: string)
       userAgent: req.get("user-agent")?.slice(0, 300),
     },
   });
-  res.cookie(SESSION_COOKIE, token, { ...cookieBase(), httpOnly: true, expires: expiresAt });
+  const secure = isRequestSecure(req);
+  const cookieName = secure ? "__Host-as_session" : "as_session";
+  res.cookie(cookieName, token, { ...cookieBase(req), httpOnly: true, expires: expiresAt, secure });
 }
 
 export async function destroySession(req: Request, res: Response) {
-  const token = req.cookies?.[SESSION_COOKIE];
+  const token = req.cookies?.["__Host-as_session"] || req.cookies?.["as_session"] || req.cookies?.[SESSION_COOKIE];
   if (token) await prisma.session.deleteMany({ where: { tokenHash: sha256(token) } });
-  res.clearCookie(SESSION_COOKIE, { ...cookieBase(), httpOnly: true });
+  res.clearCookie("__Host-as_session", { path: "/" });
+  res.clearCookie("as_session", { path: "/" });
 }
 
 export async function getSessionUser(token: string | undefined) {
@@ -57,8 +70,9 @@ export async function getSessionUser(token: string | undefined) {
   return session;
 }
 
-export function setCsrfCookie(res: Response, token: string) {
-  res.cookie(CSRF_COOKIE, token, { ...cookieBase(), httpOnly: false, maxAge: 7 * 86_400_000 });
+export function setCsrfCookie(res: Response, token: string, req?: Request) {
+  const secure = isRequestSecure(req);
+  res.cookie(CSRF_COOKIE, token, { ...cookieBase(req), httpOnly: false, maxAge: 7 * 86_400_000, secure });
 }
 
 export async function revokeAllSessions(userId: string, exceptSessionId?: string) {

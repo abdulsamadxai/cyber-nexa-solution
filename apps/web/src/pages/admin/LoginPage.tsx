@@ -3,7 +3,6 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Seo } from "@/components/Seo";
 import { AdminButton, AdminInput, Field } from "@/components/admin/ui";
 import { useAuth } from "@/context/AuthContext";
-import { ApiError } from "@/lib/api";
 import { Logo } from "@/components/site/Logo";
 import { ArrowRight, ShieldCheck } from "lucide-react";
 
@@ -23,7 +22,7 @@ export function LoginPage() {
       await login(email, password);
       navigate(location.state?.from ?? "/admin", { replace: true });
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : "Sign in failed. Please try again.");
+      setError(err instanceof Error ? err.message : "Sign in failed. Please try again.");
     } finally { setLoading(false); }
   }
 
