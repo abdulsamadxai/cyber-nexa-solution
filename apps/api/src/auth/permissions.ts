@@ -1,4 +1,4 @@
-import type { Role } from "../generated/prisma/client.js";
+import type { Role } from "@prisma/client";
 
 /**
  * Role-based access control. Permissions are enforced by `requirePermission`
