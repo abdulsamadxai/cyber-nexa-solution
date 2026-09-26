@@ -1,8 +1,13 @@
-import type { IncomingMessage, ServerResponse } from "node:http";
-import { createApp } from "../apps/api/src/app.js";
+let appPromise: Promise<any> | null = null;
 
-const app = createApp();
+async function getApp() {
+  if (!appPromise) {
+    appPromise = import("../../apps/api/src/app.js").then((m) => m.createApp());
+  }
+  return appPromise;
+}
 
-export default function handler(req: IncomingMessage, res: ServerResponse) {
+export default async function handler(req: any, res: any) {
+  const app = await getApp();
   return app(req, res);
 }
