@@ -50,32 +50,32 @@ export function HomePage() {
       <section className="relative overflow-hidden bg-gradient-to-b from-petrol to-petrol-600 text-white">
         <div className="pointer-events-none absolute inset-0 opacity-[0.15]" style={{ backgroundImage: "radial-gradient(circle at 1px 1px, rgba(255,255,255,0.6) 1px, transparent 0)", backgroundSize: "40px 40px" }} />
         <div className="pointer-events-none absolute left-1/2 top-0 h-[500px] w-[900px] -translate-x-1/2 rounded-full bg-brand-500/20 blur-[120px]" />
-        <div className="container-tight relative grid items-center gap-12 py-16 sm:py-20 lg:grid-cols-[1.05fr_1fr] lg:py-24">
+        <div className="container-tight relative grid items-center gap-10 py-12 sm:gap-12 sm:py-16 lg:grid-cols-[1.05fr_1fr] lg:py-24">
           <div>
             <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-              <Badge tone="brand" className="border border-spring/20 bg-spring/10 text-spring" dot>Technology partner for growing businesses</Badge>
+              <Badge tone="brand" className="border border-spring/20 bg-spring/10 text-spring text-xs sm:text-sm" dot>Technology partner for growing businesses</Badge>
             </motion.div>
-            <motion.h1 initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, delay: 0.05 }} className="mt-5 text-display-lg font-bold tracking-tight text-white">
+            <motion.h1 initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, delay: 0.05 }} className="mt-5 text-3xl font-bold tracking-tight text-white sm:text-4xl md:text-5xl lg:text-display-lg">
               {hero?.heading ?? "Technology Built Around Your Business."}
             </motion.h1>
-            <motion.p initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, delay: 0.12 }} className="mt-5 max-w-xl text-lg leading-relaxed text-white/70">
+            <motion.p initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, delay: 0.12 }} className="mt-4 sm:mt-5 max-w-xl text-base sm:text-lg leading-relaxed text-white/70">
               {hero?.description ?? "We design and build websites, applications, AI solutions, automation systems, and custom software that help businesses work smarter and grow."}
             </motion.p>
-            <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, delay: 0.18 }} className="mt-8 flex flex-wrap gap-3">
-              <LinkButton to={hero?.primaryCtaUrl ?? "/start-a-project"} size="lg" className="bg-spring text-petrol hover:bg-spring/90 hover:shadow-glow">
+            <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, delay: 0.18 }} className="mt-7 sm:mt-8 flex flex-col sm:flex-row flex-wrap gap-3">
+              <LinkButton to={hero?.primaryCtaUrl ?? "/start-a-project"} size="lg" className="w-full sm:w-auto justify-center bg-spring text-petrol hover:bg-spring/90 hover:shadow-glow">
                 {hero?.primaryCtaLabel ?? "Start a Project"} <ArrowRight className="h-4 w-4" />
               </LinkButton>
-              <LinkButton to={hero?.secondaryCtaUrl ?? "/services"} size="lg" variant="secondary" className="border-white/20 bg-white/5 text-white hover:bg-white/10 hover:border-white/30">
+              <LinkButton to={hero?.secondaryCtaUrl ?? "/services"} size="lg" variant="secondary" className="w-full sm:w-auto justify-center border-white/20 bg-white/5 text-white hover:bg-white/10 hover:border-white/30">
                 {hero?.secondaryCtaLabel ?? "Explore Services"}
               </LinkButton>
             </motion.div>
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6, delay: 0.3 }} className="mt-10 flex flex-wrap gap-x-6 gap-y-2 text-sm text-white/60">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6, delay: 0.3 }} className="mt-8 sm:mt-10 flex flex-wrap items-center gap-x-6 gap-y-2.5 text-xs sm:text-sm text-white/70">
               {["Websites & apps", "AI & automation", "Business systems"].map((t) => (
-                <span key={t} className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-spring" />{t}</span>
+                <span key={t} className="inline-flex items-center gap-2 whitespace-nowrap"><CheckCircle2 className="h-4 w-4 shrink-0 text-spring" />{t}</span>
               ))}
             </motion.div>
           </div>
-          <div className="relative">
+          <div className="relative mx-auto w-full max-w-[340px] sm:max-w-[420px] md:max-w-[460px] lg:max-w-[520px]">
             <SystemMap />
           </div>
         </div>
