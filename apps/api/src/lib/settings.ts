@@ -86,8 +86,8 @@ export const defaultSettings: Settings = {
   general: {
     companyName: "Cyber Nexa Solution",
     tagline: "Technology Built Around Your Business.",
-    logoUrl: "",
-    faviconUrl: "",
+    logoUrl: "/logo.png",
+    faviconUrl: "/favicon.png",
     email: "cybernexasolution@gmail.com",
     phone: "",
     whatsapp: "+92 330 5961567",

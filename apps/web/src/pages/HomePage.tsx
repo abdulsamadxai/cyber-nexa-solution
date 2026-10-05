@@ -32,15 +32,26 @@ export function HomePage() {
   const { data: testimonials } = useTestimonials();
   const hero = settings?.hero;
 
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    name: settings?.general.companyName ?? "Cyber Nexa Solution",
-    description: settings?.seo.defaultDescription,
-    url: typeof window !== "undefined" ? window.location.origin : "",
-    ...(settings?.general.email ? { email: settings.general.email } : {}),
-    ...(settings?.general.phone ? { telephone: settings.general.phone } : {}),
-  };
+  const siteUrl = "https://www.cybernexasolution.com";
+  const jsonLd = [
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      url: siteUrl,
+      name: settings?.general.companyName ?? "Cyber Nexa Solution",
+      alternateName: "CyberNexa",
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      name: settings?.general.companyName ?? "Cyber Nexa Solution",
+      description: settings?.seo.defaultDescription,
+      url: siteUrl,
+      logo: `${siteUrl}/logo.png`,
+      ...(settings?.general.email ? { email: settings.general.email } : {}),
+      ...(settings?.general.phone ? { telephone: settings.general.phone } : {}),
+    },
+  ];
 
   return (
     <>

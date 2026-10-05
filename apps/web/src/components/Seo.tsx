@@ -18,9 +18,13 @@ export function Seo({ title, description, image, path, type = "website", noindex
   const company = settings?.general.companyName ?? "Cyber Nexa Solution";
   const fullTitle = title ? `${title} · ${company}` : settings?.seo.defaultTitle ?? company;
   const desc = description ?? settings?.seo.defaultDescription ?? "";
-  const origin = typeof window !== "undefined" ? window.location.origin : "";
+  const siteUrl = "https://www.cybernexasolution.com";
+  const origin = typeof window !== "undefined" && window.location.origin ? window.location.origin : siteUrl;
   const url = origin + (path ?? (typeof window !== "undefined" ? window.location.pathname : ""));
-  const ogImage = image || settings?.seo.ogImage || settings?.general.logoUrl || "";
+  const rawImage = image || settings?.seo.ogImage || settings?.general.logoUrl || "/logo.png";
+  const ogImage = rawImage.startsWith("http")
+    ? rawImage
+    : `${origin}${rawImage.startsWith("/") ? "" : "/"}${rawImage}`;
   const blocks = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
 
   return (
