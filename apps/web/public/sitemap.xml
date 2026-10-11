@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Fallback sitemap. The live sitemap is served dynamically from the API at
+     /sitemap.xml (proxied via render.yaml); this static copy only matters if
+     that rewrite is ever missing. Regenerate if key URLs change. -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://www.cybernexasolution.com/</loc><priority>1.0</priority></url>
+  <url><loc>https://www.cybernexasolution.com/services</loc><priority>0.7</priority></url>
+  <url><loc>https://www.cybernexasolution.com/solutions</loc><priority>0.7</priority></url>
+  <url><loc>https://www.cybernexasolution.com/industries</loc><priority>0.7</priority></url>
+  <url><loc>https://www.cybernexasolution.com/projects</loc><priority>0.7</priority></url>
+  <url><loc>https://www.cybernexasolution.com/about</loc><priority>0.7</priority></url>
+  <url><loc>https://www.cybernexasolution.com/contact</loc><priority>0.7</priority></url>
+  <url><loc>https://www.cybernexasolution.com/start-a-project</loc><priority>0.7</priority></url>
+  <url><loc>https://www.cybernexasolution.com/faq</loc><priority>0.7</priority></url>
+  <url><loc>https://www.cybernexasolution.com/blog</loc><priority>0.7</priority></url>
+  <url><loc>https://www.cybernexasolution.com/blog/how-ai-is-quietly-changing-everyday-business-operations</loc><lastmod>2026-10-11</lastmod><priority>0.7</priority></url>
+  <url><loc>https://www.cybernexasolution.com/privacy</loc><priority>0.7</priority></url>
+  <url><loc>https://www.cybernexasolution.com/terms</loc><priority>0.7</priority></url>
+</urlset>
