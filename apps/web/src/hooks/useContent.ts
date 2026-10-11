@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { api, type Paged, type Wrapped } from "@/lib/api";
-import type { Faq, Project, ProjectCard, Service, ServiceCard, Solution, SolutionCard, TeamMember, Testimonial } from "@/lib/types";
+import type { Faq, Post, PostCard, Project, ProjectCard, Service, ServiceCard, Solution, SolutionCard, TeamMember, Testimonial } from "@/lib/types";
 
 export const useServices = () => useQuery({ queryKey: ["services"], queryFn: () => api<Wrapped<ServiceCard[]>>("/api/services").then((r) => r.data), staleTime: 60_000 });
 export const useService = (slug: string) => useQuery({ queryKey: ["service", slug], queryFn: () => api<Wrapped<Service>>(`/api/services/${slug}`).then((r) => r.data) });
@@ -17,3 +17,12 @@ export const useProject = (slug: string) => useQuery({ queryKey: ["project", slu
 export const useTeam = () => useQuery({ queryKey: ["team"], queryFn: () => api<Wrapped<TeamMember[]>>("/api/team").then((r) => r.data), staleTime: 60_000 });
 export const useTestimonials = () => useQuery({ queryKey: ["testimonials"], queryFn: () => api<Wrapped<Testimonial[]>>("/api/testimonials").then((r) => r.data), staleTime: 60_000 });
 export const useFaqs = () => useQuery({ queryKey: ["faqs"], queryFn: () => api<Wrapped<Faq[]>>("/api/faqs").then((r) => r.data), staleTime: 60_000 });
+
+export interface BlogCategory { id: string; name: string; slug: string; description: string | null; postCount: number }
+
+export const usePosts = (params: { category?: string; tag?: string; q?: string; page?: number } = {}) =>
+  useQuery({ queryKey: ["posts", params], queryFn: () => api<Paged<PostCard>>("/api/blog/posts", { params }), staleTime: 30_000 });
+export const usePost = (slug: string) =>
+  useQuery({ queryKey: ["post", slug], queryFn: () => api<Wrapped<Post>>(`/api/blog/posts/${slug}`).then((r) => r.data) });
+export const useBlogCategories = () =>
+  useQuery({ queryKey: ["blog-categories"], queryFn: () => api<Wrapped<BlogCategory[]>>("/api/blog/categories").then((r) => r.data), staleTime: 60_000 });
