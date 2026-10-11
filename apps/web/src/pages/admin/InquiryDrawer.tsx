@@ -30,7 +30,7 @@ export function InquiryDrawer({ id, onClose, onChanged }: { id?: string; onClose
   });
   const { data: assignees } = useQuery({
     queryKey: ["assignable-users"],
-    queryFn: () => api<Wrapped<AdminUser[]>>("/api/admin/inquiries/meta/assignees").then((r) => r.data).catch(() => [] as AdminUser[]),
+    queryFn: () => api<Wrapped<AdminUser[]>>("/api/admin/users/assignable").then((r) => r.data).catch(() => [] as AdminUser[]),
     enabled: !!id && can("inquiries.write"),
   });
 
