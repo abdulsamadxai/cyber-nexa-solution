@@ -16,6 +16,8 @@ import { StartProjectPage } from "@/pages/StartProjectPage";
 import { FaqPage } from "@/pages/FaqPage";
 import { LegalPage } from "@/pages/LegalPage";
 import { NewsletterActionPage } from "@/pages/NewsletterActionPage";
+import { BlogPage } from "@/pages/BlogPage";
+import { BlogArticlePage } from "@/pages/BlogArticlePage";
 import { NotFoundPage } from "@/pages/NotFoundPage";
 
 const AdminApp = lazy(() => import("@/pages/admin/AdminApp").then((m) => ({ default: m.AdminApp })));
@@ -36,6 +38,8 @@ export function App() {
         <Route path="contact" element={<ContactPage />} />
         <Route path="start-a-project" element={<StartProjectPage />} />
         <Route path="faq" element={<FaqPage />} />
+        <Route path="blog" element={<BlogPage />} />
+        <Route path="blog/:slug" element={<BlogArticlePage />} />
         <Route path="privacy" element={<LegalPage kind="privacy" />} />
         <Route path="terms" element={<LegalPage kind="terms" />} />
         <Route path="newsletter/confirm" element={<NewsletterActionPage action="confirm" />} />
