@@ -17,6 +17,8 @@ import { FaqPage } from "@/pages/FaqPage";
 import { LegalPage } from "@/pages/LegalPage";
 import { NewsletterActionPage } from "@/pages/NewsletterActionPage";
 import { NotFoundPage } from "@/pages/NotFoundPage";
+import { RecommendedToolsPage } from "@/pages/RecommendedToolsPage";
+import { HostingArticlePage } from "@/pages/HostingArticlePage";
 
 const AdminApp = lazy(() => import("@/pages/admin/AdminApp").then((m) => ({ default: m.AdminApp })));
 
@@ -36,6 +38,8 @@ export function App() {
         <Route path="contact" element={<ContactPage />} />
         <Route path="start-a-project" element={<StartProjectPage />} />
         <Route path="faq" element={<FaqPage />} />
+        <Route path="recommended-tools" element={<RecommendedToolsPage />} />
+        <Route path="blog/best-hosting-small-business-website" element={<HostingArticlePage />} />
         <Route path="privacy" element={<LegalPage kind="privacy" />} />
         <Route path="terms" element={<LegalPage kind="terms" />} />
         <Route path="newsletter/confirm" element={<NewsletterActionPage action="confirm" />} />
