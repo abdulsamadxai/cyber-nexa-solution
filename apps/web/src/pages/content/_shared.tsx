@@ -23,7 +23,7 @@ export function useCrudForm<T extends object>(type: string, id: string | undefin
   async function save() {
     setSaving(true);
     try {
-      if (editing) await api(`/api/admin/content/${type}/${id}`, { method: "PUT", body: item });
+      if (editing) await api(`/api/admin/content/${type}/${id}`, { method: "PATCH", body: item });
       else await api(`/api/admin/content/${type}`, { method: "POST", body: item });
       toast.success(editing ? "Saved" : "Created"); onSaved(); onClose();
     } catch (e) { toast.error("Save failed", e instanceof Error ? e.message : undefined); }

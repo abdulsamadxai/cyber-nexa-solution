@@ -27,6 +27,15 @@ export function sinceDays(days: number) {
   return d;
 }
 
+/** Turns an audit action like "blog post.published" into "Published blog post" for display. */
+export function humanizeAction(action: string): string {
+  const idx = action.lastIndexOf(".");
+  if (idx < 0) return action;
+  const resource = action.slice(0, idx);
+  const verb = action.slice(idx + 1);
+  return `${verb.charAt(0).toUpperCase()}${verb.slice(1)} ${resource}`;
+}
+
 dashboardRouter.get("/", requirePermission("dashboard.view"), async (req, res) => {
   const days = z.coerce.number().int().refine((n) => [7, 30, 90].includes(n)).catch(30).parse(req.query.days);
   const since = sinceDays(days);
@@ -89,13 +98,13 @@ dashboardRouter.get("/", requirePermission("dashboard.view"), async (req, res) =
       stats: { totalInquiries, newInquiries, contactMessages, projectInquiries, contacts, publishedProjects, publishedPosts, services, solutions, unreadNotifications, subscribers },
       charts: {
         inquiriesOverTime: fillDays(overTime, days),
-        projectTypes: byType.map((r) => ({ name: r.projectType ?? "Other", value: r._count._all })).sort((a, b) => b.value - a.value),
-        leadSources: bySource.map((r) => ({ name: r.heardFrom ?? "Not specified", value: r._count._all })).sort((a, b) => b.value - a.value),
+        projectTypes: byType.map((r) => ({ label: r.projectType ?? "Other", value: r._count._all })).sort((a, b) => b.value - a.value),
+        leadSources: bySource.map((r) => ({ label: r.heardFrom ?? "Not specified", value: r._count._all })).sort((a, b) => b.value - a.value),
         topPosts,
       },
       recentInquiries,
       followUps,
-      recentActivity: recentActivity.map((a) => ({ id: a.id, action: a.action, resource: a.resource, resourceId: a.resourceId, user: a.user?.name ?? "System", createdAt: a.createdAt })),
+      recentActivity: recentActivity.map((a) => ({ id: a.id, message: humanizeAction(a.action), createdAt: a.createdAt, user: a.user ? { name: a.user.name } : null })),
     },
   });
 });

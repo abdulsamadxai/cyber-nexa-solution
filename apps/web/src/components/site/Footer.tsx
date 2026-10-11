@@ -7,7 +7,7 @@ import { waLink } from "@/lib/whatsapp";
 
 const columns = [
   { title: "Services", links: [["Web Development", "/services/web-development"], ["Mobile Apps", "/services/mobile-app-development"], ["AI Solutions", "/services/ai-solutions"], ["Custom Software", "/services/custom-software"], ["All services", "/services"]] },
-  { title: "Company", links: [["About", "/about"], ["Our work", "/projects"], ["Industries", "/industries"], ["Contact", "/contact"]] },
+  { title: "Company", links: [["About", "/about"], ["Our work", "/projects"], ["Industries", "/industries"], ["Blog", "/blog"], ["Contact", "/contact"]] },
   { title: "Support", links: [["Start a project", "/start-a-project"], ["FAQ", "/faq"], ["Privacy Policy", "/privacy"], ["Terms of Service", "/terms"]] },
 ];
 

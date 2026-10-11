@@ -23,6 +23,7 @@ import { ProjectsPage } from "../content/ProjectsPage";
 import { TestimonialsPage } from "../content/TestimonialsPage";
 import { TeamPage } from "../content/TeamPage";
 import { FaqsPage } from "../content/FaqsPage";
+import { BlogPage } from "../content/BlogPage";
 
 function ProtectedRoute({ children, permission }: { children: React.ReactNode; permission?: string }) {
   const { user, loading, can } = useAuth();
@@ -69,6 +70,8 @@ export function AdminApp() {
         <Route path="team/:id" element={<Shell permission="content.read"><TeamPage /></Shell>} />
         <Route path="faqs" element={<Shell permission="content.read"><FaqsPage /></Shell>} />
         <Route path="faqs/:id" element={<Shell permission="content.read"><FaqsPage /></Shell>} />
+        <Route path="blog" element={<Shell permission="content.read"><BlogPage /></Shell>} />
+        <Route path="blog/:id" element={<Shell permission="content.read"><BlogPage /></Shell>} />
         <Route path="media" element={<Shell permission="media.read"><MediaLibraryPage /></Shell>} />
 
         <Route path="notifications" element={<Shell permission="notifications.read"><NotificationsPage /></Shell>} />

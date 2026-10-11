@@ -66,7 +66,7 @@ function ContactDrawer({ id, onClose, onSaved }: { id?: string; onClose: () => v
   async function save() {
     setSaving(true);
     try {
-      if (editing) await api(`/api/admin/contacts/${id}`, { method: "PUT", body: form });
+      if (editing) await api(`/api/admin/contacts/${id}`, { method: "PATCH", body: form });
       else await api("/api/admin/contacts", { method: "POST", body: form });
       toast.success(editing ? "Contact updated" : "Contact created"); onSaved(); onClose();
     } catch (e) { toast.error("Save failed", e instanceof Error ? e.message : undefined); }
