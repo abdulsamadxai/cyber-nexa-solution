@@ -39,7 +39,22 @@ export function useCrudForm<T extends object>(type: string, id: string | undefin
 }
 
 export function TagsInput({ value, onChange, placeholder }: { value: string[]; onChange: (v: string[]) => void; placeholder?: string }) {
-  return <AdminInput value={value.join(", ")} onChange={(e) => onChange(e.target.value.split(",").map((s) => s.trim()).filter(Boolean))} placeholder={placeholder ?? "Comma-separated"} />;
+  // Keep the raw text in local state while typing so commas survive keystrokes.
+  // The text is split into tags only when the field loses focus or Enter is pressed.
+  const [draft, setDraft] = useState<string | null>(null);
+  const commit = (text: string) => {
+    onChange(text.split(",").map((s) => s.trim()).filter(Boolean));
+    setDraft(null);
+  };
+  return (
+    <AdminInput
+      value={draft ?? value.join(", ")}
+      onChange={(e) => setDraft(e.target.value)}
+      onBlur={(e) => { if (draft !== null) commit(e.target.value); }}
+      onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); commit((e.target as HTMLInputElement).value); } }}
+      placeholder={placeholder ?? "Comma-separated"}
+    />
+  );
 }
 
 export function Toggle({ checked, onChange, label }: { checked: boolean; onChange: (v: boolean) => void; label: string }) {
