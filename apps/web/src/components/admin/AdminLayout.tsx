@@ -3,7 +3,7 @@ import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   LayoutDashboard, Inbox, Contact2, Briefcase, Layers, Boxes, MessageSquareQuote,
-  Users, ImageIcon, Mail, Bell, BarChart3, Settings, UserCog, LogOut, Menu,  ChevronDown, Search, ExternalLink,
+  Users, ImageIcon, Mail, Bell, BarChart3, Settings, UserCog, LogOut, Menu,  ChevronDown, Search, ExternalLink, Newspaper,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { api, type Wrapped } from "@/lib/api";
@@ -25,6 +25,7 @@ const NAV: { section: string; items: NavItem[] }[] = [
     { to: "/admin/testimonials", label: "Testimonials", icon: MessageSquareQuote, permission: "content.read" },
     { to: "/admin/team", label: "Team", icon: Users, permission: "content.read" },
     { to: "/admin/faqs", label: "FAQs", icon: MessageSquareQuote, permission: "content.read" },
+    { to: "/admin/blog", label: "Blog", icon: Newspaper, permission: "content.read" },
     { to: "/admin/media", label: "Media", icon: ImageIcon, permission: "media.read" },
   ] },
   { section: "System", items: [
