@@ -2,6 +2,7 @@ import { Router } from "express";
 import { prisma } from "../lib/prisma.js";
 import { env } from "../config/env.js";
 import { getSettings } from "../lib/settings.js";
+import { livePosts } from "./public.js";
 
 export const seoRouter = Router();
 
@@ -10,17 +11,19 @@ const xmlEscape = (s: string) => s.replace(/[<>&'"]/g, (c) => ({ "<": "&lt;", ">
 seoRouter.get("/sitemap.xml", async (_req, res) => {
   const base = env.FRONTEND_URL.replace(/\/$/, "");
   const live = { published: true, deletedAt: null };
-  const [services, solutions, projects] = await Promise.all([
+  const [services, solutions, projects, posts] = await Promise.all([
     prisma.service.findMany({ where: live, select: { slug: true, updatedAt: true } }),
     prisma.solution.findMany({ where: live, select: { slug: true, updatedAt: true } }),
     prisma.project.findMany({ where: live, select: { slug: true, updatedAt: true } }),
+    prisma.blogPost.findMany({ where: livePosts(), select: { slug: true, updatedAt: true } }),
   ]);
-  const staticPages = ["", "/services", "/solutions", "/industries", "/projects", "/about", "/contact", "/start-a-project", "/faq", "/privacy", "/terms"];
+  const staticPages = ["", "/services", "/solutions", "/industries", "/projects", "/about", "/contact", "/start-a-project", "/faq", "/blog", "/privacy", "/terms"];
   const urls = [
     ...staticPages.map((p) => ({ loc: `${base}${p}`, lastmod: undefined as Date | undefined, priority: p === "" ? "1.0" : "0.7" })),
     ...services.map((s) => ({ loc: `${base}/services/${s.slug}`, lastmod: s.updatedAt, priority: "0.8" })),
     ...solutions.map((s) => ({ loc: `${base}/solutions/${s.slug}`, lastmod: s.updatedAt, priority: "0.8" })),
     ...projects.map((s) => ({ loc: `${base}/projects/${s.slug}`, lastmod: s.updatedAt, priority: "0.6" })),
+    ...posts.map((p) => ({ loc: `${base}/blog/${p.slug}`, lastmod: p.updatedAt, priority: "0.7" })),
   ];
   const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls
     .map((u) => `  <url><loc>${xmlEscape(u.loc)}</loc>${u.lastmod ? `<lastmod>${u.lastmod.toISOString()}</lastmod>` : ""}<priority>${u.priority}</priority></url>`)
